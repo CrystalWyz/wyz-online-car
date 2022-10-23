@@ -22,7 +22,9 @@ public class VerificationCodeServiceImpl implements VerificationCodeService {
         JSONObject result = new JSONObject();
         result.put("code", 200);
         result.put("message", "success");
-        result.put("data", verificationCode);
+        JSONObject data = new JSONObject();
+        data.put("numberCode", verificationCode);
+        result.put("data", data);
         return result.toString();
     }
 }
