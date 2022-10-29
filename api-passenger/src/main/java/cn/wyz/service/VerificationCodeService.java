@@ -10,5 +10,5 @@ public interface VerificationCodeService {
      * @param passengerPhone 乘客手机号
      * @return 验证码
      */
-    String generatorVerificationCode(String passengerPhone);
+    void generatorVerificationCode(String passengerPhone);
 }

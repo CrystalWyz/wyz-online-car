@@ -2,10 +2,13 @@ package cn.wyz.service.impl;
 
 import cn.wyz.insternalcommon.bean.ResponseResult;
 import cn.wyz.insternalcommon.bean.response.NumberCodeResponse;
-import cn.wyz.remote.ServiceVerificationcodeClient;
+import cn.wyz.remote.ServiceVerificationCodeClient;
 import cn.wyz.service.VerificationCodeService;
 import com.alibaba.fastjson2.JSONObject;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author wangnanxiang
@@ -13,28 +16,28 @@ import org.springframework.stereotype.Service;
 @Service
 public class VerificationCodeServiceImpl implements VerificationCodeService {
 
-    private final ServiceVerificationcodeClient serviceVerificationcodeClient;
+    private static final String VERIFICATION_CODE_PREFIX = "passenger-verification-code-";
 
-    public VerificationCodeServiceImpl(ServiceVerificationcodeClient serviceVerificationcodeClient) {
-        this.serviceVerificationcodeClient = serviceVerificationcodeClient;
+    private final ServiceVerificationCodeClient serviceVerificationCodeClient;
+
+    private final StringRedisTemplate stringRedisTemplate;
+
+    public VerificationCodeServiceImpl(ServiceVerificationCodeClient serviceVerificationCodeClient, StringRedisTemplate stringRedisTemplate) {
+        this.serviceVerificationCodeClient = serviceVerificationCodeClient;
+        this.stringRedisTemplate = stringRedisTemplate;
     }
 
     @Override
-    public String generatorVerificationCode(String passengerPhone) {
+    public void generatorVerificationCode(String passengerPhone) {
 
-        //TODO 生成验证码
-        ResponseResult<NumberCodeResponse> numberCodeResponse = serviceVerificationcodeClient.getNumberCode(6);
+        // 生成验证码
+        ResponseResult<NumberCodeResponse> numberCodeResponse = serviceVerificationCodeClient.getNumberCode(6);
         Integer verificationCode = numberCodeResponse.getData().getNumberCode();
 
-        // TODO 存入redis
+        // 存入redis
+        String key = VERIFICATION_CODE_PREFIX + passengerPhone;
+        stringRedisTemplate.opsForValue().set(key, String.valueOf(verificationCode), 5, TimeUnit.MINUTES);
 
-
-        JSONObject result = new JSONObject();
-        result.put("code", 200);
-        result.put("message", "success");
-        JSONObject data = new JSONObject();
-        data.put("numberCode", verificationCode);
-        result.put("data", data);
-        return result.toString();
+        // 短信发送
     }
 }

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
  * @author wangnanxiang
  */
 @FeignClient("service-verificationcode")
-public interface ServiceVerificationcodeClient {
+public interface ServiceVerificationCodeClient {
 
     /**
      * 获取六位数验证码

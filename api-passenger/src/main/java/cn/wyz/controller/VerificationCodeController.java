@@ -1,5 +1,6 @@
 package cn.wyz.controller;
 
+import cn.wyz.insternalcommon.bean.ResponseResult;
 import cn.wyz.service.VerificationCodeService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -18,8 +19,8 @@ public class VerificationCodeController {
     }
 
     @GetMapping("/verification-code")
-    public String verificationCode(@RequestParam String passengerPhone) {
-
-        return verificationCodeService.generatorVerificationCode(passengerPhone);
+    public ResponseResult<?> verificationCode(@RequestParam String passengerPhone) {
+        verificationCodeService.generatorVerificationCode(passengerPhone);
+        return ResponseResult.success();
     }
 }
