@@ -2,9 +2,12 @@ package cn.wyz.service.impl;
 
 import cn.wyz.insternalcommon.bean.ResponseResult;
 import cn.wyz.insternalcommon.bean.response.NumberCodeResponse;
+import cn.wyz.insternalcommon.constant.CommonStatusEnum;
+import cn.wyz.insternalcommon.exception.AppException;
 import cn.wyz.remote.ServiceVerificationCodeClient;
 import cn.wyz.service.VerificationCodeService;
 import com.alibaba.fastjson2.JSONObject;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -35,9 +38,27 @@ public class VerificationCodeServiceImpl implements VerificationCodeService {
         Integer verificationCode = numberCodeResponse.getData().getNumberCode();
 
         // 存入redis
-        String key = VERIFICATION_CODE_PREFIX + passengerPhone;
+        String key = generatorKey(passengerPhone);
         stringRedisTemplate.opsForValue().set(key, String.valueOf(verificationCode), 5, TimeUnit.MINUTES);
 
         // 短信发送
+    }
+
+    private static String generatorKey(String passengerPhone) {
+        return VERIFICATION_CODE_PREFIX + passengerPhone;
+    }
+
+    @Override
+    public void checkVerificationCode(String passengerPhone, String verificationCode) {
+        String key = generatorKey(passengerPhone);
+        String redisCode = stringRedisTemplate.opsForValue().get(key);
+
+        if (StringUtils.isEmpty(redisCode)) {
+            throw new AppException(CommonStatusEnum.VERIFICATION_CODE_OVERDUE.getCode(), CommonStatusEnum.VERIFICATION_CODE_OVERDUE.getMessage());
+        }
+
+        if (!redisCode.equals(verificationCode.trim())) {
+            throw new AppException(CommonStatusEnum.VERIFICATION_CODE_ERROR.getCode(), CommonStatusEnum.VERIFICATION_CODE_ERROR.getMessage());
+        }
     }
 }

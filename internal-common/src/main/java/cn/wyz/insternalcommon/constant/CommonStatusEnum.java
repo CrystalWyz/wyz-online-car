@@ -17,7 +17,15 @@ public enum CommonStatusEnum {
     /**
      * 失败
      */
-    FAIL(500,"fail");
+    FAIL(500,"fail"),
+    /**
+     * 验证码已过期
+     */
+    VERIFICATION_CODE_OVERDUE(1098, "验证码已过期"),
+    /**
+     * 验证码错误
+     */
+    VERIFICATION_CODE_ERROR(1099, "验证码不正确");
 
     private final int code;
     private final String message;
