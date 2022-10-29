@@ -1,5 +1,8 @@
 package cn.wyz.service.impl;
 
+import cn.wyz.insternalcommon.bean.ResponseResult;
+import cn.wyz.insternalcommon.bean.response.NumberCodeResponse;
+import cn.wyz.remote.ServiceVerificationcodeClient;
 import cn.wyz.service.VerificationCodeService;
 import com.alibaba.fastjson2.JSONObject;
 import org.springframework.stereotype.Service;
@@ -10,11 +13,18 @@ import org.springframework.stereotype.Service;
 @Service
 public class VerificationCodeServiceImpl implements VerificationCodeService {
 
+    private final ServiceVerificationcodeClient serviceVerificationcodeClient;
+
+    public VerificationCodeServiceImpl(ServiceVerificationcodeClient serviceVerificationcodeClient) {
+        this.serviceVerificationcodeClient = serviceVerificationcodeClient;
+    }
+
     @Override
     public String generatorVerificationCode(String passengerPhone) {
 
         //TODO 生成验证码
-        String verificationCode = "1";
+        ResponseResult<NumberCodeResponse> numberCodeResponse = serviceVerificationcodeClient.getNumberCode(6);
+        Integer verificationCode = numberCodeResponse.getData().getNumberCode();
 
         // TODO 存入redis
 
