@@ -4,9 +4,9 @@ import cn.wyz.insternalcommon.bean.ResponseResult;
 import cn.wyz.insternalcommon.bean.response.NumberCodeResponse;
 import cn.wyz.insternalcommon.constant.CommonStatusEnum;
 import cn.wyz.insternalcommon.exception.AppException;
+import cn.wyz.remote.ServicePassengerUserClient;
 import cn.wyz.remote.ServiceVerificationCodeClient;
 import cn.wyz.service.VerificationCodeService;
-import com.alibaba.fastjson2.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -23,10 +23,13 @@ public class VerificationCodeServiceImpl implements VerificationCodeService {
 
     private final ServiceVerificationCodeClient serviceVerificationCodeClient;
 
+    private final ServicePassengerUserClient servicePassengerUserClient;
+
     private final StringRedisTemplate stringRedisTemplate;
 
-    public VerificationCodeServiceImpl(ServiceVerificationCodeClient serviceVerificationCodeClient, StringRedisTemplate stringRedisTemplate) {
+    public VerificationCodeServiceImpl(ServiceVerificationCodeClient serviceVerificationCodeClient, ServicePassengerUserClient servicePassengerUserClient, StringRedisTemplate stringRedisTemplate) {
         this.serviceVerificationCodeClient = serviceVerificationCodeClient;
+        this.servicePassengerUserClient = servicePassengerUserClient;
         this.stringRedisTemplate = stringRedisTemplate;
     }
 
@@ -50,6 +53,7 @@ public class VerificationCodeServiceImpl implements VerificationCodeService {
 
     @Override
     public void checkVerificationCode(String passengerPhone, String verificationCode) {
+        // 验证码校验
         String key = generatorKey(passengerPhone);
         String redisCode = stringRedisTemplate.opsForValue().get(key);
 
@@ -60,5 +64,10 @@ public class VerificationCodeServiceImpl implements VerificationCodeService {
         if (!redisCode.equals(verificationCode.trim())) {
             throw new AppException(CommonStatusEnum.VERIFICATION_CODE_ERROR.getCode(), CommonStatusEnum.VERIFICATION_CODE_ERROR.getMessage());
         }
+        // 校验成功 删除验证码缓存
+        stringRedisTemplate.delete(key);
+
+        // 用户判断
+        servicePassengerUserClient.login(passengerPhone);
     }
 }
