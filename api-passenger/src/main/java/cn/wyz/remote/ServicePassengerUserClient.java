@@ -17,7 +17,7 @@ public interface ServicePassengerUserClient {
     /**
      * 用户登录远程调用
      * @param passengerPhone 用户手机号
-     * @return
+     * @return 结果
      */
     @PostMapping("/user")
     ResponseResult<?> login(@RequestParam String passengerPhone);
