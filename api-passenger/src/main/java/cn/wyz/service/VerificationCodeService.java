@@ -1,5 +1,7 @@
 package cn.wyz.service;
 
+import cn.wyz.bean.response.TokenResponseDTO;
+
 /**
  * @author wangnanxiang
  */
@@ -15,6 +17,7 @@ public interface VerificationCodeService {
      * 校验验证码
      * @param passengerPhone 乘客手机号
      * @param verificationCode 验证码
+     * @return token
      */
-    void checkVerificationCode(String passengerPhone, String verificationCode);
+    TokenResponseDTO checkVerificationCode(String passengerPhone, String verificationCode);
 }

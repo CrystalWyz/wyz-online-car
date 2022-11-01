@@ -1,9 +1,15 @@
 package cn.wyz.service.impl;
 
+import cn.wyz.bean.response.TokenResponseDTO;
 import cn.wyz.insternalcommon.bean.ResponseResult;
+import cn.wyz.insternalcommon.bean.dto.TokenDTO;
 import cn.wyz.insternalcommon.bean.response.NumberCodeResponse;
 import cn.wyz.insternalcommon.constant.CommonStatusEnum;
+import cn.wyz.insternalcommon.constant.IdentityEnum;
+import cn.wyz.insternalcommon.constant.TokenTypeEnum;
 import cn.wyz.insternalcommon.exception.AppException;
+import cn.wyz.insternalcommon.util.JwtUtils;
+import cn.wyz.insternalcommon.util.RedisKeyUtils;
 import cn.wyz.remote.ServicePassengerUserClient;
 import cn.wyz.remote.ServiceVerificationCodeClient;
 import cn.wyz.service.VerificationCodeService;
@@ -18,9 +24,6 @@ import java.util.concurrent.TimeUnit;
  */
 @Service
 public class VerificationCodeServiceImpl implements VerificationCodeService {
-
-    private static final String VERIFICATION_CODE_PREFIX = "passenger-verification-code-";
-
     private final ServiceVerificationCodeClient serviceVerificationCodeClient;
 
     private final ServicePassengerUserClient servicePassengerUserClient;
@@ -41,20 +44,16 @@ public class VerificationCodeServiceImpl implements VerificationCodeService {
         Integer verificationCode = numberCodeResponse.getData().getNumberCode();
 
         // 存入redis
-        String key = generatorKey(passengerPhone);
+        String key = RedisKeyUtils.generatorKey(passengerPhone);
         stringRedisTemplate.opsForValue().set(key, String.valueOf(verificationCode), 5, TimeUnit.MINUTES);
 
         // 短信发送
     }
 
-    private static String generatorKey(String passengerPhone) {
-        return VERIFICATION_CODE_PREFIX + passengerPhone;
-    }
-
     @Override
-    public void checkVerificationCode(String passengerPhone, String verificationCode) {
+    public TokenResponseDTO checkVerificationCode(String passengerPhone, String verificationCode) {
         // 验证码校验
-        String key = generatorKey(passengerPhone);
+        String key = RedisKeyUtils.generatorKey(passengerPhone);
         String redisCode = stringRedisTemplate.opsForValue().get(key);
 
         if (StringUtils.isEmpty(redisCode)) {
@@ -69,5 +68,18 @@ public class VerificationCodeServiceImpl implements VerificationCodeService {
 
         // 用户判断
         servicePassengerUserClient.login(passengerPhone);
+
+        // 下发token
+        TokenDTO tokenDTO = TokenDTO.builder().phone(passengerPhone).identity(IdentityEnum.PASSENGER.getCode()).build();
+        String accessToken = JwtUtils.generatorToken(tokenDTO, TokenTypeEnum.ACCESS_TOKEN_TYPE.getCode());
+        String refreshToken = JwtUtils.generatorToken(tokenDTO, TokenTypeEnum.REFRESH_TOKEN_TYPE.getCode());
+
+        //服务器端存储token
+        String accessTokenKey = RedisKeyUtils.generatorTokenKey(passengerPhone, IdentityEnum.PASSENGER.getCode(),TokenTypeEnum.ACCESS_TOKEN_TYPE.getCode());
+        String refreshTokenKey = RedisKeyUtils.generatorTokenKey(passengerPhone, IdentityEnum.PASSENGER.getCode(),TokenTypeEnum.REFRESH_TOKEN_TYPE.getCode());
+        stringRedisTemplate.opsForValue().set(accessTokenKey, accessToken, 7, TimeUnit.DAYS);
+        stringRedisTemplate.opsForValue().set(refreshTokenKey, refreshToken, 30, TimeUnit.DAYS);
+
+        return new TokenResponseDTO(accessToken, refreshToken);
     }
 }

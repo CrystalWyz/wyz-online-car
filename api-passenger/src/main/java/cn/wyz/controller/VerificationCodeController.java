@@ -1,6 +1,7 @@
 package cn.wyz.controller;
 
 import cn.wyz.bean.VerificationCodeDTO;
+import cn.wyz.bean.response.TokenResponseDTO;
 import cn.wyz.insternalcommon.bean.ResponseResult;
 import cn.wyz.service.VerificationCodeService;
 import org.springframework.web.bind.annotation.*;
@@ -24,8 +25,9 @@ public class VerificationCodeController {
     }
 
     @PostMapping("/verification-code-check")
-    public ResponseResult<String> checkVerificationCode(@RequestBody VerificationCodeDTO verificationCodeDTO) {
-        verificationCodeService.checkVerificationCode(verificationCodeDTO.getPassengerPhone(), verificationCodeDTO.getVerificationCode());
-        return null;
+    public ResponseResult<TokenResponseDTO> checkVerificationCode(@RequestBody VerificationCodeDTO verificationCodeDTO) {
+        TokenResponseDTO token = verificationCodeService.checkVerificationCode(verificationCodeDTO.getPassengerPhone(),
+                verificationCodeDTO.getVerificationCode());
+         return ResponseResult.success(token);
     }
 }
