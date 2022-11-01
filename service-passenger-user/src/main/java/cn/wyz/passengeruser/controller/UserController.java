@@ -1,11 +1,10 @@
 package cn.wyz.passengeruser.controller;
 
 
+import cn.wyz.insternalcommon.bean.PassengerUser;
 import cn.wyz.insternalcommon.bean.ResponseResult;
 import cn.wyz.passengeruser.service.UserService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author wangnanxiang
@@ -23,5 +22,11 @@ public class UserController {
     public ResponseResult<?> login(@RequestParam String passengerPhone) {
         userService.login(passengerPhone);
         return ResponseResult.success();
+    }
+
+    @GetMapping("/userInfo/{phone}")
+    public ResponseResult<PassengerUser> getUserInfo(@PathVariable("phone") String passengerPhone) {
+        PassengerUser userInfo = userService.getUserInfo(passengerPhone);
+        return ResponseResult.success(userInfo);
     }
 }

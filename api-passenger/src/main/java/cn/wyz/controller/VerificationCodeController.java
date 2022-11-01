@@ -1,6 +1,6 @@
 package cn.wyz.controller;
 
-import cn.wyz.bean.VerificationCodeDTO;
+import cn.wyz.bean.dto.VerificationCodeDTO;
 import cn.wyz.bean.response.TokenResponseDTO;
 import cn.wyz.insternalcommon.bean.ResponseResult;
 import cn.wyz.service.VerificationCodeService;

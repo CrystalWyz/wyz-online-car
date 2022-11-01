@@ -1,4 +1,4 @@
-package cn.wyz.bean;
+package cn.wyz.bean.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

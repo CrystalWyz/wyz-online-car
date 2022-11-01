@@ -1,6 +1,6 @@
 package cn.wyz.passengeruser.mapper;
 
-import cn.wyz.passengeruser.bean.PassengerUser;
+import cn.wyz.insternalcommon.bean.PassengerUser;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 

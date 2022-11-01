@@ -2,7 +2,7 @@ package cn.wyz.passengeruser.service.impl;
 
 import cn.wyz.insternalcommon.constant.CommonStatusEnum;
 import cn.wyz.insternalcommon.exception.AppException;
-import cn.wyz.passengeruser.bean.PassengerUser;
+import cn.wyz.insternalcommon.bean.PassengerUser;
 import cn.wyz.passengeruser.mapper.PassengerUserMapper;
 import cn.wyz.passengeruser.service.UserService;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
@@ -45,8 +45,16 @@ public class UserServiceImpl implements UserService {
             if (insertResult <= 0) {
                 throw new AppException(CommonStatusEnum.FAIL.getCode(), "用户注册失败");
             }
-        } else {
-            // TODO 下发token
         }
+    }
+
+    @Override
+    public PassengerUser getUserInfo(String passengerPhone) {
+        PassengerUser passengerUser = userMapper.selectOne(Wrappers.lambdaQuery(PassengerUser.class)
+                .eq(PassengerUser::getPassengerPhone, passengerPhone));
+        if (ObjectUtils.isEmpty(passengerUser)) {
+            throw new AppException(CommonStatusEnum.FAIL.getCode(), "用户不存在");
+        }
+        return passengerUser;
     }
 }

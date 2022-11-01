@@ -1,4 +1,4 @@
-package cn.wyz.passengeruser.bean;
+package cn.wyz.insternalcommon.bean;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,4 +29,6 @@ public class PassengerUser {
     private Byte passengerGender;
 
     private Byte state;
+
+    private String profilePhoto;
 }
