@@ -2,6 +2,7 @@ package cn.wyz.serviceprice.controller;
 
 import cn.wyz.insternalcommon.bean.ResponseResult;
 import cn.wyz.insternalcommon.bean.dto.ForecastPriceDTO;
+import cn.wyz.insternalcommon.bean.response.ForecastPriceResponse;
 import cn.wyz.serviceprice.service.ForecastPriceService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,8 +21,8 @@ public class ForecastPriceController {
     }
 
     @PostMapping("/forecast-price")
-    public ResponseResult<?> forecastPrice(@RequestBody ForecastPriceDTO forecastPriceDTO) {
-        forecastPriceService.forecastPrice(forecastPriceDTO);
-        return null;
+    public ResponseResult<ForecastPriceResponse> forecastPrice(@RequestBody ForecastPriceDTO forecastPriceDTO) {
+        ForecastPriceResponse forecastPriceResponse = forecastPriceService.forecastPrice(forecastPriceDTO);
+        return ResponseResult.success(forecastPriceResponse);
     }
 }

@@ -25,7 +25,11 @@ public enum CommonStatusEnum {
     /**
      * 验证码错误
      */
-    VERIFICATION_CODE_ERROR(1099, "验证码不正确");
+    VERIFICATION_CODE_ERROR(1099, "验证码不正确"),
+    /**
+     * 计价规则不存在
+     */
+    PRICE_RULE_EMPTY(1300, "计价规则不存在");
 
     private final int code;
     private final String message;

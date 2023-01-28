@@ -3,7 +3,7 @@ package cn.wyz.controller;
 import cn.wyz.insternalcommon.bean.ResponseResult;
 import cn.wyz.insternalcommon.bean.dto.ForecastPriceDTO;
 import cn.wyz.insternalcommon.bean.response.ForecastPriceResponse;
-import cn.wyz.service.ForecastPriceService;
+import cn.wyz.remote.ServicePriceClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,15 +14,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class ForecastPriceController {
 
-    private final ForecastPriceService forecastPriceService;
+    private final ServicePriceClient servicePriceClient;
 
-    public ForecastPriceController(ForecastPriceService forecastPriceService) {
-        this.forecastPriceService = forecastPriceService;
+    public ForecastPriceController(ServicePriceClient servicePriceClient) {
+        this.servicePriceClient = servicePriceClient;
     }
+
 
     @PostMapping("/forecast-price")
     public ResponseResult<ForecastPriceResponse> forecastPrice(@RequestBody ForecastPriceDTO forecastPriceDTO) {
-        ForecastPriceResponse forecastPriceResponse = forecastPriceService.forecastPrice(forecastPriceDTO);
-        return ResponseResult.success(forecastPriceResponse);
+        return servicePriceClient.forecastPrice(forecastPriceDTO);
     }
 }

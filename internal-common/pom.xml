@@ -11,4 +11,11 @@
 
     <artifactId>internal-common</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>1.3.1.Final</version>
+        </dependency>
+    </dependencies>
 </project>
